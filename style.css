@@ -52,6 +52,7 @@ input:focus {
 }
 
 .board {
+  position: relative;
   display: grid;
   grid-template-columns: repeat(3, 100px);
   grid-template-rows: repeat(3, 100px);
@@ -124,6 +125,7 @@ button {
   background: linear-gradient(135deg, #667eea, #764ba2);
   color: white;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+  min-width: 220px;
 }
 
 .leaderboard h3 {
@@ -159,6 +161,7 @@ button {
   color: #ffb6c1;
   font-weight: bold;
 }
+
 .main-content {
   display: flex;
   gap: 40px;
@@ -166,6 +169,15 @@ button {
   justify-content: center;
 }
 
-.leaderboard {
-  min-width: 220px;
+/* Win line styling */
+.win-line {
+  position: absolute;
+  height: 6px;
+  background: grey;
+  width: 0;
+  top: 0;
+  left: 0;
+  transform-origin: left center;
+  transition: all 0.4s ease;
+  border-radius: 5px;
 }

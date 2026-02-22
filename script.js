@@ -59,42 +59,53 @@ function handleCellClick(e) {
   // Record move
   gameState[cellIndex] = currentPlayer;
   clickedCell.innerText = currentPlayer;
-  
+
   // Style move
   clickedCell.style.color = currentPlayer === "X" ? "#3498db" : "#e67e22";
 
   if (checkResult()) return;
 
-  // Switch Player
+  // Switch player
   currentPlayer = currentPlayer === "X" ? "O" : "X";
   updateStatus();
 }
 
 function checkResult() {
   let roundWon = false;
+  let winningPattern = null;
 
   for (let condition of winningConditions) {
     const [a, b, c] = condition;
-    if (gameState[a] && gameState[a] === gameState[b] && gameState[a] === gameState[c]) {
+
+    if (
+      gameState[a] !== "" &&
+      gameState[a] === gameState[b] &&
+      gameState[a] === gameState[c]
+    ) {
       roundWon = true;
+      winningPattern = [a, b, c];
       break;
     }
   }
 
   if (roundWon) {
-  statusText.innerText = `Player ${currentPlayer} wins!`;
-  scores[currentPlayer]++;
-  updateLeaderboard();
-  gameActive = false;
-  return;
-}
- if (!gameState.includes("")) {
-  statusText.innerText = "It's a draw!";
-  scores.draws++;
-  updateLeaderboard();
-  gameActive = false;
+    statusText.innerText = `${playerNames[currentPlayer]} wins!`;
+    scores[currentPlayer]++;
+    updateLeaderboard();
+    gameActive = false;
+    drawWinLine(winningPattern);
+    return true;
+  }
 
-}
+  if (!gameState.includes("")) {
+    statusText.innerText = "It's a draw!";
+    scores.draws++;
+    updateLeaderboard();
+    gameActive = false;
+    return true;
+  }
+
+  return false;
 }
 function updateLeaderboard() {
   document.getElementById("scoreX").innerText = scores.X;
@@ -112,10 +123,55 @@ document.getElementById("resetScores").addEventListener("click", () => {
 
 // --- Reset & Navigation ---
 
-function resetBoard() {
+/*function resetBoard() {
   startGame();
+    statusText.innerText = `Player ${currentPlayer} wins!`;
+    gameActive = false;
+    drawWinLine(winningPattern);
+    return;
+  }
+  if (!gameState.includes("")) {
+    statusText.innerText = "It's a draw!";
+    gameActive = false;
+  }
+}
+*/
+function resetGame() {
+  startGame();
+  gameActive = true;
+  currentPlayer = "X";
+  gameState = ["", "", "", "", "", "", "", "", ""];
+  statusText.innerText = `Player X's turn`;
+  cells.forEach(cell => cell.innerText = "");// ✅ FIX: clear board visually
+  const winLine = document.getElementById("winLine");
+  winLine.style.width = "0";
 }
 
-board.forEach(cell => cell.addEventListener("click", handleCellClick));
+function drawWinLine(pattern) {
+  const winLine = document.getElementById("winLine");
+
+  const positions = {
+    "0,1,2": { top: "16%", left: "5%", width: "90%", rotate: "0deg" },
+    "3,4,5": { top: "50%", left: "5%", width: "90%", rotate: "0deg" },
+    "6,7,8": { top: "83%", left: "5%", width: "90%", rotate: "0deg" },
+
+    "0,3,6": { top: "5%", left: "16%", width: "90%", rotate: "90deg" },
+    "1,4,7": { top: "5%", left: "50%", width: "90%", rotate: "90deg" },
+    "2,5,8": { top: "5%", left: "83%", width: "90%", rotate: "90deg" },
+
+    "0,4,8": { top: "5%", left: "5%", width: "130%", rotate: "45deg" },
+    "2,4,6": { top: "5%", left: "95%", width: "130%", rotate: "-45deg" }
+  };
+
+  const key = pattern.toString();
+  const pos = positions[key];
+
+  winLine.style.top = pos.top;
+  winLine.style.left = pos.left;
+  winLine.style.width = pos.width;
+  winLine.style.transform = `rotate(${pos.rotate})`;
+}
+
+cells.forEach(cell => cell.addEventListener("click", handleCellClick));
 resetBtn.addEventListener("click", resetGame);
 updateLeaderboard();
