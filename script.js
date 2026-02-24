@@ -204,3 +204,15 @@ function drawWinLine(pattern) {
 cells.forEach(cell => cell.addEventListener("click", handleCellClick));
 resetBtn.addEventListener("click", resetGame);
 updateLeaderboard();
+// Change Players Button Fix
+changeNamesBtn.addEventListener("click", () => {
+  gameContainer.style.display = "none";
+  setupContainer.style.display = "block";
+
+  // Clear input fields (optional but clean)
+  document.getElementById("p1Input").value = "";
+  document.getElementById("p2Input").value = "";
+
+  // Reset board state
+  resetGame();
+});
